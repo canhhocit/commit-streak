@@ -1,0 +1,47 @@
+name: Daily commit streak
+
+on:
+  schedule:
+    # 00:15 Asia/Ho_Chi_Minh (UTC+7)
+    - cron: '15 17 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out default branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create the daily commits
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Use Vietnam time so both the date and commit timestamps match the intended day.
+          export TZ=Asia/Ho_Chi_Minh
+          today="$(date +%F)"
+          day="$(date +%-d)"
+          if (( day < 10 )); then
+            count=$((day + 10))
+          else
+            count="$day"
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for ((i = 1; i <= count; i++)); do
+            printf '%s commit %02d/%02d\n' "$today" "$i" "$count" >> activity.log
+            git add activity.log
+            GIT_AUTHOR_DATE="$(date --iso-8601=seconds)" \
+            GIT_COMMITTER_DATE="$(date --iso-8601=seconds)" \
+              git commit -m "chore: daily activity $today ($i/$count)"
+          done
+
+          git push origin "HEAD:${GITHUB_REF_NAME:-$(git branch --show-current)}"
