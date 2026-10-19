@@ -19,4 +19,4 @@ Each commit appends one line to `activity.log`. The workflow needs repository wr
 2. In GitHub, open **Settings → Actions → General → Workflow permissions** and allow read and write permissions if the organization/repository policy requires that setting.
 3. Confirm the workflow appears under **Actions** and that scheduled workflows are enabled.
 
-GitHub scheduled runs can be delayed during high load. The commits are given Vietnam-local timestamps so GitHub can associate them with the intended local date.
+GitHub scheduled runs can be delayed during high load. The commits are given Vietnam-local timestamps so GitHub can associate them with the intended local date
